@@ -1,0 +1,19 @@
+package ar.edu.unlam.dominio;
+
+public class Medico extends Persona{
+	
+	private Especialidad tipoEspecialidad;
+
+	public Medico(String nombre, String apellido, Integer edad, Integer dni,Especialidad tipoEspecialidad) {
+		super(nombre, apellido, edad, dni);
+		this.tipoEspecialidad = tipoEspecialidad;
+	}
+
+	public Especialidad getTipoEspecialidad() {
+		return tipoEspecialidad;
+	}
+
+	
+	
+	
+}
