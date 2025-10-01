@@ -26,12 +26,38 @@ public class GestionDeTurnos {
 	}	
 	
 	
-	public Boolean reservarUnTuro(Reserva reservaNueva) { 
+	public Boolean reservarUnTurno(Reserva reservaNueva) { 
 		/*	 HACER METODO DE VALIDAR LA RESERVA O ALGO ASI.
 		 *  1) VALIDAR QUE LA EL HORARIO NO SEA ANTES DE LAS 8 NI DESPUES DE LAS 17
 		 * 2) VALIDAR QUE EL CLIENTE NO TENGA UNA RESERVA ESE DIA Y ESE HORARIO CON OTRO MEDICO
 		  3) VALIDAR QUE EL MEDICO NO TENGA UNA RESERVAE ESE DIA Y ESE HORARIO CON OTRO PACIENTE */
-	return this.listadoDeReservas.add(reservaNueva);	
+		
+		//1)
+		int hora = reservaNueva.getFechaYHora().getHour();
+		if(hora < 8 || hora > 17) {
+			return false;
+		}
+		
+		//2)
+		for (Reserva reserva : listadoDeReservas) {
+			if(reserva.getPaciente().equals(reservaNueva.getPaciente())
+					&& reserva.getFechaYHora().equals(reservaNueva.getFechaYHora())
+					&& !reserva.getMedico().equals(reservaNueva.getMedico())) {
+				return false;
+			}
+		}
+		
+		//3)
+		for(Reserva reserva : listadoDeReservas) {
+			if(reserva.getMedico().equals(reservaNueva.getMedico())
+					&& reserva.getFechaYHora().equals(reservaNueva.getFechaYHora())
+					&& !reserva.getPaciente().equals(reservaNueva.getPaciente())) {
+				return false;
+			}
+		}
+		
+		//paso todas las validaciones, agregamos la nueva reserva.
+		return this.listadoDeReservas.add(reservaNueva);
 	}
 	
 	

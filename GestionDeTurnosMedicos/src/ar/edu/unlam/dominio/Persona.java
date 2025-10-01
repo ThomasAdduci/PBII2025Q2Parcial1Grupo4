@@ -21,6 +21,10 @@ public abstract class Persona {
 	public String getNombre() {
 		return nombre;
 	}
+	
+	public String getNombreCompleto() {
+		return nombre + " " + apellido;
+	}
 
 
 	public Integer getEdad() {

@@ -107,16 +107,34 @@ public class TurnosMedicosTest {
 
 
 	@Test
-	public void dadoQueExisteUnClienteYQuiereReservarUnTurnoMedicoSeObtieneUnResultadoExitoso() {
+	public void dadoQueExisteUnPacienteYQuiereReservarUnTurnoMedicoSeObtieneUnResultadoExitoso() {
+		boolean reservaDeTurno = osde.reservarUnTurno(reserva1);
+		assertTrue(reservaDeTurno);
 	}
 	
-	public void dadoQueExisteUnClienteQuiereReservarUnTurnoFueraDelHorarioEstablecidoYObtieneResultadoFalso() {
+	@Test
+	public void dadoQueExisteUnPacienteQuiereReservarUnTurnoFueraDelHorarioEstablecidoYObtieneResultadoFalso() {
+		Reserva reservaFueraDeHorario;
+		LocalDateTime  fechaHoraFueraDeHorario= LocalDateTime.of(2025, 12, 18, 7, 30); // 12 de Diciembre 7.30 hs
 		
+		reservaFueraDeHorario = new Reserva(paciente1,medico1,fechaHoraFueraDeHorario);
+		
+		boolean reserva = osde.reservarUnTurno(reservaFueraDeHorario);
+		assertFalse(reserva);
 	}
 	
+	@Test
 	public void dadoQueExisteUnClienteYQuiereReservarDosTurnosElMismoDiaYHoraYObtieneResultadoFalso() {
+		osde.reservarUnTurno(reserva1); //reservamos la reserva1 que esta inicializada en el before
 		
+		LocalDateTime fechaHoraDeReserva = LocalDateTime.of(2025, 10, 8, 10, 30); // misma fecha que reserva1
+		Reserva nuevaReserva = new Reserva(paciente1,medico1,fechaHoraDeReserva);
+		
+		boolean reservaDuplicada = osde.reservarUnTurno(nuevaReserva);
+		assertFalse(reservaDuplicada);
 	}
+	
+	//TODO Validar que el medico no tenga un turno con 2 pacientes distintos en la misma fecha y hora.
 	
 	public void dadoQueExisteNoExisteUnClienteRegistradoEnElSistemaYQuiereReservarUnTurnoYObtieneResultadoFalso() {
 		
