@@ -1,0 +1,37 @@
+package ar.edu.unlam.dominio;
+
+import java.util.HashSet;
+
+public class GestionDeTurnos {
+
+	private HashSet <Reserva> listadoDeReservas;
+	private HashSet <Medico> listadoDeMedicos;
+	private HashSet <Paciente> listadoDePacientes;
+	
+	public GestionDeTurnos() {
+		this.listadoDeReservas = new HashSet <> ();
+		this.listadoDeMedicos = new HashSet <> ();
+		this.listadoDePacientes = new HashSet <> ();
+	}
+	
+	
+	
+}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}

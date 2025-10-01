@@ -1,0 +1,12 @@
+package ar.edu.unlam.dominioTest;
+
+import org.junit.Test;
+
+public class TurnosMedicosTest {
+
+	
+	@Test
+	
+	public void dadoQueExisteUnClienteYQuiereReservarUnTurnoMedicoSeObtieneUnResultadoExitoso() {
+	}
+}

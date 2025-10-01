@@ -1,0 +1,140 @@
+package ar.edu.unlam.dominioTest;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.time.LocalDateTime;
+
+import org.junit.Before;
+import org.junit.Test;
+import ar.edu.unlam.dominio.*;
+
+public class TurnosMedicosTest {
+
+	private GestionDeTurnos osde;
+	// ATRIBUTOS MEDICO
+	private Medico medico1;
+	private Especialidad tipo1;
+	
+	// ATRIBUTOS PACIENTES
+	private Paciente paciente1;
+	private Paciente paciente2;
+	
+	
+	// ATRIBUTOS RESERVA
+	private Reserva reserva1;
+	
+	
+	
+	@Before
+	public void inicializacion() {
+		osde = new GestionDeTurnos();
+		
+		// MEDICO 1
+		String nombreMedico1 = "Pablo";
+		String apellidoMedico1 = "Martinez";
+		Integer edadMedico1 = 60;
+		Integer dniMedico1 = 17555892;
+		tipo1 = Especialidad.CLINICA;
+		medico1 = new Medico(nombreMedico1,apellidoMedico1, edadMedico1,dniMedico1,tipo1);
+		
+		//MEDICO 2
+	
+		// PACIENTE 1
+		String nombrePaciente1 = "Pedro";
+		String apellidoPaciente1 = "Lanzani";
+		Integer edadPaciente1 = 33;
+		Integer dniPaciente1 = 36888999;;
+		
+		paciente1 = new Paciente(nombrePaciente1,apellidoPaciente1,edadPaciente1,dniPaciente1);
+		
+		// PACIENTE 2 
+		String nombrePaciente2 = "Camila";
+		String apellidoPaciente2 = "Dominguez";
+		Integer edadPaciente2 = 37;
+		Integer dniPaciente2 = 34999888; //MISMO DNI QUE PACIENTE 1
+		
+		paciente2 = new Paciente(nombrePaciente2,apellidoPaciente2,edadPaciente2,dniPaciente2);
+		
+		LocalDateTime  fechaHora1= LocalDateTime.of(2025, 10, 8, 10, 30); // 8 de Octubre 10.30 hs
+		reserva1 = new Reserva(paciente1,medico1,fechaHora1);
+	}
+	
+	
+	@Test
+	public void DadoQueExisteUnGestorDeTurnosSeQuiereAgregarUnNuevoPacienteYSeObtieneUnResultadoExitoso() {
+		
+		Boolean seAgrego = osde.agregarPacienteAlSistema(paciente1);
+		assertTrue(seAgrego);
+	}
+	
+	@Test
+	public void DadoQueExisteUnGestorDeTurnosSeQuiereAgregar2PacientesConElMismoDniYSeObtieneUnResultadoFalso() {
+	    // PACIENTE 2 
+		String nombrePacienteNuevo = "Camila";
+		String apellidoPacienteNuevo = "Dominguez";
+		Integer edadPacienteNuevo = 37;
+		Integer dniPacienteNuevo = 36888999; // MISMO DNI QUE PACIENTE 1 INICIALIZADO EN BEFORE. 
+		
+		Paciente pacienteNuevo = new Paciente(nombrePacienteNuevo,apellidoPacienteNuevo,edadPacienteNuevo,dniPacienteNuevo);
+	
+		
+		Boolean seAgrego = osde.agregarPacienteAlSistema(paciente1);
+		Boolean seAgrego2 = osde.agregarPacienteAlSistema(pacienteNuevo);
+		assertTrue(seAgrego);
+		assertFalse(seAgrego2);
+	}
+	@Test
+	
+	public void DadoQueExisteUnGestorDeTurnosSeQuiereAgregarUnNuevoMedicoYSeObtieneUnResultadoExitoso() {
+		
+		Boolean seAgrego = osde.agregarMedicoAlSistema(medico1);
+		assertTrue(seAgrego);
+	}
+	
+	@Test
+	public void DadoQueExisteUnGestorDeTurnosSeQuiereAgregar2MedicosConElMismoDniYSeObtieneUnResultadoFalso() {
+		String nombreMedico2 = "Gustavo";
+		String apellidoMedico2 = "Machargo";
+		Integer edadMedico2 = 55;
+		Integer dniMedico2 = 17555892; // MISMO DNI QUE MEDICO 1 QUE ESTA INICIALIZADO EN EL BEFORE.
+		Especialidad tipo2 = Especialidad.DERMATOLOGIA;
+		Medico medico2 = new Medico(nombreMedico2,apellidoMedico2, edadMedico2,dniMedico2,tipo2);
+			
+		
+		Boolean seAgrego = osde.agregarMedicoAlSistema(medico1);
+		Boolean seAgrego2 = osde.agregarMedicoAlSistema(medico2);
+		assertTrue(seAgrego);
+		assertFalse(seAgrego2);
+	}
+	
+	
+	
+
+	@Test
+	public void dadoQueExisteUnClienteYQuiereReservarUnTurnoMedicoSeObtieneUnResultadoExitoso() {
+	}
+	
+	public void dadoQueExisteUnClienteQuiereReservarUnTurnoFueraDelHorarioEstablecidoYObtieneResultadoFalso() {
+		
+	}
+	
+	public void dadoQueExisteUnClienteYQuiereReservarDosTurnosElMismoDiaYHoraYObtieneResultadoFalso() {
+		
+	}
+	
+	public void dadoQueExisteNoExisteUnClienteRegistradoEnElSistemaYQuiereReservarUnTurnoYObtieneResultadoFalso() {
+		
+	}
+	
+	public void dadoQueExisteUnClienteConUnTurnoSolicitadoYLoQuiereCancelarSeObtieneUnResultadoExitoso() {
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+}

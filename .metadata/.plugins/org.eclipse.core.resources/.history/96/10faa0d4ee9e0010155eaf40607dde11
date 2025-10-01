@@ -1,0 +1,57 @@
+package ar.edu.unlam.dominio;
+
+import java.util.HashSet;
+
+public class GestionDeTurnos {
+
+	private HashSet <Reserva> listadoDeReservas;
+	private HashSet <Medico> listadoDeMedicos;
+	private HashSet <Paciente> listadoDePacientes;
+	
+	public GestionDeTurnos() {
+		this.listadoDeReservas = new HashSet <> ();
+		this.listadoDeMedicos = new HashSet <> ();
+		this.listadoDePacientes = new HashSet <> ();
+	}
+	
+	
+	public Boolean agregarPacienteAlSistema(Paciente clienteNuevo) {
+		return this.listadoDePacientes.add(clienteNuevo);
+	
+	}	
+	
+	public Boolean agregarMedicoAlSistema(Medico medicoNuevo) {
+		return this.listadoDeMedicos.add(medicoNuevo);
+	}	
+	
+	public Boolean reservarUnTuro(Paciente pacienteReserva, Medico medicoBuscado, LocalDateTiem fechaYHora) {
+	this.listadoDeReservas.add(reserva1);	
+	}
+	
+	public Reserva buscarReservaPorId(Integer id) {
+	
+			
+		}
+		
+	}
+	
+	
+}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+

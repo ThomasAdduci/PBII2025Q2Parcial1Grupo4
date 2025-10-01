@@ -1,0 +1,47 @@
+package ar.edu.unlam.dominioTest;
+
+import org.junit.Before;
+import org.junit.Test;
+import ar.edu.unlam.dominio.*;
+public class TurnosMedicosTest {
+
+	private GestionDeTurnos osde;
+	
+	
+	
+	@Before
+
+	public void inicializacion() {
+		osde = new GestionDeTurnos();
+		
+		
+	}
+	
+
+	@Test
+	public void dadoQueExisteUnClienteYQuiereReservarUnTurnoMedicoSeObtieneUnResultadoExitoso() {
+	}
+	
+	public void dadoQueExisteUnClienteQuiereReservarUnTurnoFueraDelHorarioEstablecidoYObtieneResultadoFalso() {
+		
+	}
+	
+	public void dadoQueExisteUnClienteYQuiereReservarDosTurnosElMismoDiaYHoraYObtieneResultadoFalso() {
+		
+	}
+	
+	public void dadoQueExisteNoExisteUnClienteRegistradoEnElSistemaYQuiereReservarUnTurnoYObtieneResultadoFalso() {
+		
+	}
+	
+	public void dadoQueExisteUnClienteConUnTurnoSolicitadoYLoQuiereCancelarSeObtieneUnResultadoExitoso() {
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+}
