@@ -46,7 +46,7 @@ public class TurnosMedicosTest {
 		Integer dniPaciente1 = 36888999;
 		;
 
-		paciente1 = new Paciente(nombrePaciente1, apellidoPaciente1, edadPaciente1, dniPaciente1);
+		paciente1 = new Paciente(nombrePaciente1, apellidoPaciente1, edadPaciente1, dniPaciente1,Plan.ESTANDAR);
 
 		// PACIENTE 2
 		String nombrePaciente2 = "Camila";
@@ -54,7 +54,7 @@ public class TurnosMedicosTest {
 		Integer edadPaciente2 = 37;
 		Integer dniPaciente2 = 34999888;
 
-		paciente2 = new Paciente(nombrePaciente2, apellidoPaciente2, edadPaciente2, dniPaciente2);
+		paciente2 = new Paciente(nombrePaciente2, apellidoPaciente2, edadPaciente2, dniPaciente2,Plan.ESTANDAR);
 
 		LocalDateTime fechaHora1 = LocalDateTime.of(2025, 10, 8, 10, 30); // 8 de Octubre 10.30 hs
 		reserva1 = new Reserva(paciente1, medico1, fechaHora1);
@@ -76,7 +76,7 @@ public class TurnosMedicosTest {
 		Integer dniPacienteNuevo = 36888999; // MISMO DNI QUE PACIENTE 1 INICIALIZADO EN BEFORE.
 
 		Paciente pacienteNuevo = new Paciente(nombrePacienteNuevo, apellidoPacienteNuevo, edadPacienteNuevo,
-				dniPacienteNuevo);
+				dniPacienteNuevo,Plan.ESTANDAR);
 
 		Boolean seAgrego = osde.agregarPacienteAlSistema(paciente1);
 		Boolean seAgrego2 = osde.agregarPacienteAlSistema(pacienteNuevo);
@@ -116,7 +116,7 @@ public class TurnosMedicosTest {
 		Integer dniPacienteMedico = 17555892;
 
 		Paciente pacienteMedico = new Paciente(nombrePacienteMedico, apellidoPacienteMedico, edadPacienteMedico,
-				dniPacienteMedico);
+				dniPacienteMedico,Plan.ESTANDAR);
 
 		osde.agregarMedicoAlSistema(medico1);
 		Boolean seAgrego = osde.agregarPacienteAlSistema(pacienteMedico);
@@ -275,4 +275,55 @@ public class TurnosMedicosTest {
 
 	}
 
+@Test
+public void DadoQueExisteUnClienteYMedicosEnElSistemaSeDeniegaAgregarTurnosDeDiasAnteriores() {
+	osde.agregarPacienteAlSistema(paciente1);
+	osde.agregarMedicoAlSistema(medico1);
+
+	LocalDateTime fechaHora2 = LocalDateTime.of(2025, 9, 10, 9, 00); // 10 de Septiembre 09:00 hs
+	Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2);
+	
+	assertTrue(osde.reservarUnTurno(reserva1)); // fecha 10 de Octubre
+	assertFalse(osde.reservarUnTurno2(reserva2));
+	
+	LocalDateTime fechaHora3 = LocalDateTime.of(2025, 10, 2, 8, 00); // 2 de Octubre 08:00 hs (dia de hoy a las 8 am)
+	Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3);
+	
+	assertTrue(osde.reservarUnTurno2(reserva3));
+	
+	LocalDateTime fechaHora4 = LocalDateTime.of(2025, 10, 2, 17, 00); // 2 de Octubre 08:00 hs (dia de hoy a las 17:00 pm)
+	Reserva reserva4 = new Reserva(paciente1, medico1, fechaHora4);
+	
+	assertTrue(osde.reservarUnTurno2(reserva4));
+	
+}
+@Test
+public void DadoQueExisteUnaReservaEnElSistemaBuscarUnaListaDeReservaDelMesDelCliente() {
+	osde.agregarPacienteAlSistema(paciente1);
+	osde.agregarMedicoAlSistema(medico1);
+
+	LocalDateTime fechaHora2 = LocalDateTime.of(2025, 10, 12, 9, 00); // 12 de Octubre 09:00 hs
+	Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2);
+	
+	LocalDateTime fechaHora3 = LocalDateTime.of(2025, 11, 15, 8, 00); // 15 de Noviembre 08:00 hs 
+	Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3);
+	
+	assertTrue(osde.reservarUnTurno(reserva1)); // fecha 10 de Octubre
+	assertTrue(osde.reservarUnTurno2(reserva2));
+	assertTrue(osde.reservarUnTurno2(reserva3));
+	
+	LocalDateTime fechaMes = LocalDateTime.of(2025, 10, 1, 9, 00); // 1 de Octubre 09:00 hs
+	
+	HashSet<Reserva>listaEsperada=new HashSet<Reserva>();
+	
+	listaEsperada.add(reserva1);
+	listaEsperada.add(reserva2);
+	
+	HashSet<Reserva>listaObtenida=osde.reservasDeUnClientePorMes(paciente1, fechaMes);
+	
+	assertEquals(listaObtenida,listaEsperada);
+}
+
+
+	
 }
