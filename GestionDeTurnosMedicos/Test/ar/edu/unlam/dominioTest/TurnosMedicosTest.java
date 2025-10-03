@@ -5,7 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +56,7 @@ public class TurnosMedicosTest {
 		Integer edadPaciente2 = 37;
 		Integer dniPaciente2 = 34999888;
 
-		paciente2 = new Paciente(nombrePaciente2, apellidoPaciente2, edadPaciente2, dniPaciente2,Plan.ESTANDAR);
+		paciente2 = new Paciente(nombrePaciente2, apellidoPaciente2, edadPaciente2, dniPaciente2,Plan.COBERTURA_TOTAL);
 
 		LocalDateTime fechaHora1 = LocalDateTime.of(2025, 10, 8, 10, 30); // 8 de Octubre 10.30 hs
 		reserva1 = new Reserva(paciente1, medico1, fechaHora1);
@@ -323,7 +325,63 @@ public void DadoQueExisteUnaReservaEnElSistemaBuscarUnaListaDeReservaDelMesDelCl
 	
 	assertEquals(listaObtenida,listaEsperada);
 }
+@Test
+public void DesdeUnaListaDeReservasSeEsperaUnMontoCalculadoDe0ParaCoberturaTotaly400ParaPlanEstandar() {
+	osde.agregarPacienteAlSistema(paciente1);
+	osde.agregarPacienteAlSistema(paciente2);
+	osde.agregarMedicoAlSistema(medico1);
 
-
+	LocalDateTime fechaHora2 = LocalDateTime.of(2025, 10, 12, 9, 00); // 12 de Octubre 09:00 hs
+	Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2);
+	
+	LocalDateTime fechaHora3 = LocalDateTime.of(2025, 10, 15, 8, 00); // 15 de Octubre 08:00 hs 
+	Reserva reserva3 = new Reserva(paciente2, medico1, fechaHora3);
+	
+	assertTrue(osde.reservarUnTurno(reserva1)); // fecha 10 de Octubre
+	assertTrue(osde.reservarUnTurno2(reserva2));
+	assertTrue(osde.reservarUnTurno2(reserva3));
+	
+	Double resultadoEsperadoCoberturaTotal=0.0;
+	Double resultadoObtenidoCoberturaTotal=osde.calcularImporteDelMesDado(fechaHora3, paciente2);
+	
+	Double resultadoEsperadoCoberturaEstandar=200.0;
+	Double resultadoObtenidoCoberturaEstandar=osde.calcularImporteDelMesDado(fechaHora3, paciente1);
+	
+	assertEquals(resultadoEsperadoCoberturaTotal,resultadoObtenidoCoberturaTotal);
+	assertEquals(resultadoEsperadoCoberturaEstandar,resultadoObtenidoCoberturaEstandar);
+}
+@Test
+public void ObtenerUnaListaDePacientesOrdenadosAlfabeticamentePorSuTipoDePlan() {
+	Paciente paciente3;
+	Paciente paciente4;
+	Paciente paciente5;
+	Paciente paciente6;
+	
+	paciente3 = new Paciente("Mica", "Sarmiento",85, 00001,Plan.JUVENTUD);
+	paciente4 = new Paciente("Mati", "Federal", 12, 024347,Plan.NO_POSEE);
+	paciente5 = new Paciente("Tomas", "Mazza", 67,6546546,Plan.ESTANDAR);
+	paciente6 = new Paciente("Ivan", "PalestinaFree", 120, 23523623,Plan.COBERTURA_TOTAL);
+	
+	osde.agregarPacienteAlSistema(paciente3);
+	osde.agregarPacienteAlSistema(paciente4);
+	osde.agregarPacienteAlSistema(paciente5);
+	osde.agregarPacienteAlSistema(paciente6);
+	
+	ArrayList<Paciente>ListaEsperada=new ArrayList<Paciente>();
+	
+	ListaEsperada.add(paciente6); //COBERTURA_TOTAL
+	ListaEsperada.add(paciente5); //ESTANDAR
+	ListaEsperada.add(paciente3); //JUVENTUD
+	ListaEsperada.add(paciente4); //NO_POSEE
+	
+	ArrayList<Paciente>ListaObtenida=new ArrayList<Paciente>();
+	ListaObtenida=osde.listaOrdenadaPacientesPorTipos();
+	
+	assertEquals(ListaEsperada,ListaObtenida);
 	
 }
+
+
+}
+	
+

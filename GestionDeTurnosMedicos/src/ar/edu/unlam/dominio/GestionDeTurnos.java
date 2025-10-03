@@ -3,6 +3,8 @@ package ar.edu.unlam.dominio;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 
 public class GestionDeTurnos {
@@ -207,6 +209,14 @@ public class GestionDeTurnos {
 		return reservasEncontradas;
 
 	}	
+	
+	public ArrayList<Paciente> listaOrdenadaPacientesPorTipos() {
+		ArrayList<Paciente> listaPacientes=new ArrayList<Paciente>(listadoDePacientes);
+		
+		listaPacientes.sort((p1, p2) -> p1.getPlan().name().compareTo(p2.getPlan().name()));
+		
+		return listaPacientes;
+	}
 	// Esta funcion devuelve un true si la fecha ingresada es anterior a el dia actual, 5 pm.
 	public Boolean compararSiFechaEsAnteriorAHoy(LocalDateTime fechaIngresada){
 		LocalDate fechaLimite=LocalDate.now();;
@@ -217,8 +227,9 @@ public class GestionDeTurnos {
 		
 		return false;
 	}
-	// En base a la fecha mandada,buscar los gastos acumulados del mes public 
-	Double calcularImporteDelMesDado(LocalDateTime fecha,Paciente paciente) { 
+	// En base a la fecha mandada,buscar los gastos acumulados del mes 
+	
+	public Double calcularImporteDelMesDado(LocalDateTime fecha,Paciente paciente) { 
 		
 		Double importeCalculado=0.0; 
 		
@@ -231,6 +242,7 @@ public class GestionDeTurnos {
 		
 	}
 	// Encontrar las reservas de un cliente del mes ingresado
+	
 	public HashSet<Reserva> reservasDeUnClientePorMes(Paciente paciente,LocalDateTime fecha){
 		HashSet<Reserva>listaReservasMes=new HashSet();
 		
