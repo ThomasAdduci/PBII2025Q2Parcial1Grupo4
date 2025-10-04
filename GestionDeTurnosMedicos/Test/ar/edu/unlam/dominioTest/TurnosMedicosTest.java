@@ -6,10 +6,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import ar.edu.unlam.dominio.*;
+
+import ar.edu.unlam.interfaces.AccesorioClinico;
+import ar.edu.unlam.interfaces.AnalisisSangre;
+import ar.edu.unlam.interfaces.RayosX;
 
 public class TurnosMedicosTest {
 
@@ -24,6 +29,10 @@ public class TurnosMedicosTest {
 
 	// ATRIBUTOS RESERVA
 	private Reserva reserva1;
+	private Reserva reservaConAccesorios;
+	
+	// COLECCION DE ACCESORIOS
+	Set<AccesorioClinico> accesorios = new HashSet<>();
 
 	@Before
 	public void inicializacion() {
@@ -46,7 +55,8 @@ public class TurnosMedicosTest {
 		Integer dniPaciente1 = 36888999;
 		;
 
-		paciente1 = new Paciente(nombrePaciente1, apellidoPaciente1, edadPaciente1, dniPaciente1);
+		//paciente1 = new Paciente(nombrePaciente1, apellidoPaciente1, edadPaciente1, dniPaciente1);
+		paciente1 = new Paciente(nombrePaciente1, apellidoPaciente1, edadPaciente1, dniPaciente1, Plan.COBERTURA_TOTAL);
 
 		// PACIENTE 2
 		String nombrePaciente2 = "Camila";
@@ -54,10 +64,12 @@ public class TurnosMedicosTest {
 		Integer edadPaciente2 = 37;
 		Integer dniPaciente2 = 34999888;
 
-		paciente2 = new Paciente(nombrePaciente2, apellidoPaciente2, edadPaciente2, dniPaciente2);
+		//paciente2 = new Paciente(nombrePaciente2, apellidoPaciente2, edadPaciente2, dniPaciente2);
+		paciente2 = new Paciente(nombrePaciente2, apellidoPaciente2, edadPaciente2, dniPaciente2, Plan.ESTANDAR);
 
 		LocalDateTime fechaHora1 = LocalDateTime.of(2025, 10, 8, 10, 30); // 8 de Octubre 10.30 hs
-		reserva1 = new Reserva(paciente1, medico1, fechaHora1);
+		reserva1 = new Reserva(paciente1, medico1, fechaHora1, paciente1.getPlan().getCopago());
+		reservaConAccesorios = new Reserva(paciente1, medico1, fechaHora1, accesorios, paciente1.getPlan().getCopago());
 	}
 
 	@Test
@@ -76,7 +88,7 @@ public class TurnosMedicosTest {
 		Integer dniPacienteNuevo = 36888999; // MISMO DNI QUE PACIENTE 1 INICIALIZADO EN BEFORE.
 
 		Paciente pacienteNuevo = new Paciente(nombrePacienteNuevo, apellidoPacienteNuevo, edadPacienteNuevo,
-				dniPacienteNuevo);
+				dniPacienteNuevo, Plan.COBERTURA_TOTAL);
 
 		Boolean seAgrego = osde.agregarPacienteAlSistema(paciente1);
 		Boolean seAgrego2 = osde.agregarPacienteAlSistema(pacienteNuevo);
@@ -116,7 +128,7 @@ public class TurnosMedicosTest {
 		Integer dniPacienteMedico = 17555892;
 
 		Paciente pacienteMedico = new Paciente(nombrePacienteMedico, apellidoPacienteMedico, edadPacienteMedico,
-				dniPacienteMedico);
+				dniPacienteMedico, Plan.COBERTURA_TOTAL);
 
 		osde.agregarMedicoAlSistema(medico1);
 		Boolean seAgrego = osde.agregarPacienteAlSistema(pacienteMedico);
@@ -144,7 +156,7 @@ public class TurnosMedicosTest {
 		Reserva reservaFueraDeHorario;
 		LocalDateTime fechaHoraFueraDeHorario = LocalDateTime.of(2025, 12, 18, 7, 30); // 12 de Diciembre 7.30 hs
 
-		reservaFueraDeHorario = new Reserva(paciente1, medico1, fechaHoraFueraDeHorario);
+		reservaFueraDeHorario = new Reserva(paciente1, medico1, fechaHoraFueraDeHorario, paciente1.getPlan().getCopago());
 
 		Boolean reserva = osde.reservarUnTurno(reservaFueraDeHorario);
 		assertFalse(reserva);
@@ -155,7 +167,7 @@ public class TurnosMedicosTest {
 		osde.reservarUnTurno(reserva1); // reservamos la reserva1 que esta inicializada en el before
 
 		LocalDateTime fechaHoraDeReserva = LocalDateTime.of(2025, 10, 8, 10, 30); // misma fecha que reserva1
-		Reserva nuevaReserva = new Reserva(paciente1, medico1, fechaHoraDeReserva);
+		Reserva nuevaReserva = new Reserva(paciente1, medico1, fechaHoraDeReserva, paciente1.getPlan().getCopago());
 
 		Boolean reservaDuplicada = osde.reservarUnTurno(nuevaReserva);
 		assertFalse(reservaDuplicada);
@@ -191,13 +203,13 @@ public class TurnosMedicosTest {
 		osde.agregarMedicoAlSistema(medico1);
 
 		LocalDateTime fechaHora2 = LocalDateTime.of(2025, 10, 10, 9, 00); // 10 de octubre 09:00 hs
-		Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2);
+		Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2, paciente1.getPlan().getCopago());
 
 		LocalDateTime fechaHora3 = LocalDateTime.of(2025, 10, 18, 15, 30); // 18 de octubre 15:30 hs
-		Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3);
+		Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3, paciente1.getPlan().getCopago());
 
 		LocalDateTime fechaHora4 = LocalDateTime.of(2025, 10, 20, 13, 00); // 20 de octubre 13:00s
-		Reserva reserva4 = new Reserva(paciente1, medico1, fechaHora4);
+		Reserva reserva4 = new Reserva(paciente1, medico1, fechaHora4, paciente1.getPlan().getCopago());
 
 		osde.reservarUnTurno(reserva1);
 		osde.reservarUnTurno(reserva2);
@@ -219,13 +231,13 @@ public class TurnosMedicosTest {
 		osde.agregarMedicoAlSistema(medico1);
 
 		LocalDateTime fechaHora2 = LocalDateTime.of(2025, 10, 10, 9, 00); // 10 de octubre 09:00 hs
-		Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2);
+		Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2, paciente1.getPlan().getCopago());
 
 		LocalDateTime fechaHora3 = LocalDateTime.of(2025, 10, 18, 15, 30); // 18 de octubre 15:30 hs
-		Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3);
+		Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3, paciente1.getPlan().getCopago());
 
 		LocalDateTime fechaHora4 = LocalDateTime.of(2025, 10, 20, 13, 00); // 20 de octubre 13:00s
-		Reserva reserva4 = new Reserva(paciente1, medico1, fechaHora4);
+		Reserva reserva4 = new Reserva(paciente1, medico1, fechaHora4, paciente1.getPlan().getCopago());
 
 		osde.reservarUnTurno(reserva1);
 		osde.reservarUnTurno(reserva2);
@@ -245,13 +257,13 @@ public class TurnosMedicosTest {
 		osde.agregarMedicoAlSistema(medico1);
 
 		LocalDateTime fechaHora2 = LocalDateTime.of(2025, 9, 10, 9, 00); // 10 de Septiembre 09:00 hs
-		Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2);
+		Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2, paciente1.getPlan().getCopago());
 
 		LocalDateTime fechaHora3 = LocalDateTime.of(2025, 8, 18, 15, 30); // 18 de Agosto 15:30 hs
-		Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3);
+		Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3, paciente1.getPlan().getCopago());
 
 		LocalDateTime fechaHora4 = LocalDateTime.of(2025, 11, 20, 13, 00); // 20 de Noviembre 13:00s
-		Reserva reserva4 = new Reserva(paciente1, medico1, fechaHora4);
+		Reserva reserva4 = new Reserva(paciente1, medico1, fechaHora4, paciente1.getPlan().getCopago());
 
 		osde.reservarUnTurno(reserva1); // fecha 10 de Octubre
 		osde.reservarUnTurno(reserva2);
@@ -273,6 +285,39 @@ public class TurnosMedicosTest {
 
 		assertEquals(reservasRealizadas, reservaObtenida);
 
+	}
+	
+	@Test
+	public void calcularCostoFinalDeUnTurnoConUnAccesorioIncluido() {
+		accesorios.add(new RayosX()); //le sumamos accesorio rayosx, paga 100.
+		//la reserva ya está inicializada en @Before con paciente1, medico1.
+		Integer costoObtenido = reservaConAccesorios.calcularCostoFinal();
+		//Tiene cobertura total, no paga consulta.
+		Integer costoEsperado = 100;
+		assertEquals(costoEsperado, costoObtenido);
+	}
+	
+	@Test
+	public void calcularCostoFinalDeUnTurnoConVariosAccesoriosIncluidos() {
+		accesorios.add(new RayosX());
+		accesorios.add(new AnalisisSangre()); //lo calculamos con 2 accesorios.
+		Integer costoObtenido = reservaConAccesorios.calcularCostoFinal();
+		//Cobertura total -> $0
+		//RayosX -> $100
+		//Analisis -> $200
+		Integer costoEsperado = 300;
+		assertEquals(costoEsperado, costoObtenido);
+	}
+	
+	@Test
+	public void calcularCostoFinalDeUnTurnoSinAccesoriosIncluidos() {
+		LocalDateTime fechaHoraTurno = LocalDateTime.of(2025, 10, 8, 10, 30);
+		Reserva reservaSinAccesorios = new Reserva(paciente2, medico1, fechaHoraTurno, paciente2.getPlan().getCopago());
+		Integer costoObtenido = reservaSinAccesorios.calcularCostoFinal();
+		//Paciente2 tiene plan estandar -> costo $100
+		//no tiene accesorios la consulta
+		Integer costoEsperado = 100;
+		assertEquals(costoEsperado, costoObtenido);
 	}
 
 }
