@@ -127,8 +127,7 @@ public class TurnosMedicosTest {
 		Integer edadPacienteMedico = 60;
 		Integer dniPacienteMedico = 17555892;
 
-		Paciente pacienteMedico = new Paciente(nombrePacienteMedico, apellidoPacienteMedico, edadPacienteMedico,
-				dniPacienteMedico, Plan.COBERTURA_TOTAL);
+		Paciente pacienteMedico = new Paciente(nombrePacienteMedico, apellidoPacienteMedico, edadPacienteMedico,dniPacienteMedico, Plan.COBERTURA_TOTAL);
 
 		osde.agregarMedicoAlSistema(medico1);
 		Boolean seAgrego = osde.agregarPacienteAlSistema(pacienteMedico);
@@ -138,17 +137,18 @@ public class TurnosMedicosTest {
 
 	@Test
 	public void dadoQueExisteUnPacienteYQuiereReservarUnTurnoMedicoSeObtieneUnResultadoExitoso() {
+		osde.agregarPacienteAlSistema(paciente1);
 		Boolean reservaDeTurno = osde.reservarUnTurno(reserva1);
 		assertTrue(reservaDeTurno);
 	}
+	
 
 	@Test
 	public void dadoQueNoExisteUnClienteRegistradoEnElSistemaYQuiereReservarUnTurnoYObtieneResultadoFalso() {
 		// EL PACIENTE NO ESTA AGREGADO AL SISTEMA Y SE  INTENTA HACER UNA RESERVA
 		osde.agregarMedicoAlSistema(medico1);
-		Boolean seReservo = osde.reservarUnTurno2(reserva1);
+		Boolean seReservo = osde.reservarUnTurno(reserva1);
 		assertFalse(seReservo);
-
 	}
 
 	@Test
@@ -172,9 +172,34 @@ public class TurnosMedicosTest {
 		Boolean reservaDuplicada = osde.reservarUnTurno(nuevaReserva);
 		assertFalse(reservaDuplicada);
 	}
-
-	// TODO Validar que el medico no tenga un turno con 2 pacientes distintos en la
-	// misma fecha y hora.
+	
+	@Test
+	public void dadoQueExisteUnPacienteConUnaReservaYOtroClienteQuiereSacarTurno10MinutosDespuesNoPuede() {
+		osde.agregarPacienteAlSistema(paciente1);
+		osde.agregarPacienteAlSistema(paciente2);
+		osde.reservarUnTurno(reserva1); // RESERVA 1 CON FECHA 08/10/2025 10.30 HS
+		
+		// RESERVA 1 8 de Octubre 10.30 hs
+		LocalDateTime fechaHora2 = LocalDateTime.of(2025, 10, 8, 10, 40); // 10 MINUTOS DESPUES
+		Reserva reserva2 = new Reserva(paciente2, medico1, fechaHora2, paciente2.getPlan().getCopago());
+		Boolean seAgrego = osde.reservarUnTurno(reserva2);
+		
+		assertFalse(seAgrego);
+	}
+	
+	@Test
+	public void dadoQueExisteUnPacienteConUnaReservaYOtroClienteQuiereSacarTurno15MinutosDespuesObtieneResultadoExitoso() {
+		osde.agregarPacienteAlSistema(paciente1);
+		osde.agregarPacienteAlSistema(paciente2);
+		osde.reservarUnTurno(reserva1); // RESERVA 1 CON FECHA 08/10/2025 10.30 HS
+		
+		// RESERVA 1 8 de Octubre 10.30 hs
+		LocalDateTime fechaHora2 = LocalDateTime.of(2025, 10, 8, 10, 45); // 10 MINUTOS DESPUES
+		Reserva reserva2 = new Reserva(paciente2, medico1, fechaHora2, paciente2.getPlan().getCopago());
+		Boolean seAgrego = osde.reservarUnTurno(reserva2);
+		
+		assertTrue(seAgrego);
+	}
 	
 	@Test
 	public void dadoQueExisteUnClienteConUnTurnoSolicitadoYLoQuiereCancelarSeObtieneUnResultadoExitoso() {
@@ -286,6 +311,9 @@ public class TurnosMedicosTest {
 		assertEquals(reservasRealizadas, reservaObtenida);
 
 	}
+	
+	
+	
 	
 	@Test
 	public void calcularCostoFinalDeUnTurnoConUnAccesorioIncluido() {
