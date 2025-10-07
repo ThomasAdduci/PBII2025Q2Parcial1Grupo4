@@ -42,114 +42,15 @@ public class GestionDeTurnosInterfaz {
 			switch (opcionSeleccionada) {
 
 			case ALTA_PACIENTE:
-				teclado.nextLine(); // Para limpiar el buffer
-				String nombre = mensajeConTeclado("Ingrese su nombre");
-				String apellido = mensajeConTeclado("Ingrese su apellido");
-				Integer edad = mensajeConTecladoInt("Ingrese su edad");
-				Integer dni = mensajeConTecladoInt("Ingrese su numero de DNI");
-				mostrarElMenuDePlanes(opcionesPlan);
-				Integer seleccionPlan = mensajeConTecladoInt("Ingrese su cobertura");
-				Plan planSeleccionado = opcionesPlan[seleccionPlan - 1];
-
-				Paciente pacienteNuevo = new Paciente(nombre, apellido, edad, dni, planSeleccionado);
-				Boolean seAgrego = osde.agregarPacienteAlSistema(pacienteNuevo);
-
-				if (!seAgrego) {
-					System.out.println("El DNI: " + dni + " ya está registrado en nuestra Base de Datos");
-				} else {
-					System.out.println("El paciente " + nombre + ", dni: " + dni
-							+ " se ha registrado correctamente en el sistema.");
-				}
+				metodoAltaPaciente();
 
 				break;
 			case RESERVAR_TURNO:
-				inicializacionDeMedicos();
-
-				Integer numeroDni = mensajeConTecladoInt("Ingrese su numero de DNI");
-				Paciente pacienteAReservar = osde.buscarPacientePorDni(numeroDni);
-
-				if (pacienteAReservar == null) {
-					System.out
-							.println("El paciente con DNI:" + numeroDni + " no se encuentra registrado en el sistema.");
-					break;
-				}
-
-				mostrarElMenuDeEspecialidad(opcionesEspecialidad);
-				Integer opcionEspecialidad = mensajeConTecladoInt("Seleccione la especialidad:");
-				Especialidad especialidadSeleccionada = opcionesEspecialidad[opcionEspecialidad - 1];
-
-				HashSet<Medico> medicosEncontrados = osde.buscarMedicosPorEspecialidad(especialidadSeleccionada);
-
-//				if (medicosEncontrados.isEmpty()) {
-//					System.out.println("No hay médicos disponibles");
-//					break; } 
-				// NO SE SI HACE FALTA PORQ TENEMOS A LOS MEDICOS INICIALIZADOS POR ESO LO
-				// COMENTÉ
-
-				System.out.println("Los medicos disponibles son :");
-				for (Medico medico : medicosEncontrados) {
-					System.out.println(medico);
-				}
-
-				Integer opcionMedico = mensajeConTecladoInt(
-						"Por favor, ingrese el codigo del medico que desea tomar turno:");
-				Medico medicoElegido = osde.buscarMedicoPorCodigo(opcionMedico);
-
-				LocalDateTime fechaYHoraTurno = mensajeParaFechaYHora();
-
-				Reserva nuevaReserva = new Reserva(pacienteAReservar, medicoElegido, fechaYHoraTurno,
-						pacienteAReservar.getPlan().getCopago());
-
-				Boolean seAgregoReserva = osde.reservarUnTurno(nuevaReserva);
-
-				// ACA VER SI LO DEJAMOS ASI, O VER EL PORQ NO SE RESERVO EL TURNO Y MANDAR MSJ
-				// X ESO.
-				// TIPO YA TIENE UN TURNO EN ESE HORARIO, O EL MEDICO NO PUEDE O ES FUERA DEL
-				// HORARIO PERMITIDO
-				if (!seAgregoReserva) {
-					System.out.println("No se pudo reservar el turno. Intenté en otro horario ");
-				} else {
-					System.out.println("Reserva realizada exitosamente");
-					System.out.println(pacienteAReservar.getNombre() + " tiene un turno programado con "  + medicoElegido.getNombreCompleto()  + " el día " + fechaYHoraTurno.getDayOfMonth() + " del mes: " + fechaYHoraTurno.getMonthValue() + " a las " + fechaYHoraTurno.getHour() + ":" + fechaYHoraTurno.getMinute());
-				}
+				reservarTurno(osde, opcionesEspecialidad);
 				break;
 				
 			case CANCELAR_TURNO:
-				
-				Integer dniACancelar = mensajeConTecladoInt("Ingrese su número de DNI");
-			    Paciente pacienteACancelar = osde.buscarPacientePorDni(dniACancelar);
-
-			    if (pacienteACancelar == null) {
-			        System.out.println("El paciente con DNI: " + dniACancelar + " no se encuentra registrado.");
-			        break;
-			    }
-
-			    HashSet<Reserva> reservasDelPaciente = osde.buscarReservasPorPaciente(pacienteACancelar);
-
-			    if (reservasDelPaciente.isEmpty()) {
-			        System.out.println("No se encontraron reservas para el paciente.");
-			        break;
-			    }
-
-			    System.out.println("Turnos actuales del paciente:");
-			    for (Reserva reserva : reservasDelPaciente) {
-			        System.out.println("ID: " + reserva.getId() + " | Fecha: " + reserva.getFechaYHoraInicio() +
-			            " | Médico: " + reserva.getMedico().getNombreCompleto());
-			    }
-
-			    Integer idReserva = mensajeConTecladoInt("Ingrese el ID del turno que desea cancelar:");
-			    Reserva reservaSeleccionada = osde.buscarReservaPorId(idReserva);
-
-			    if (reservaSeleccionada != null && reservaSeleccionada.getPaciente().equals(pacienteACancelar)) {
-			        Boolean seCancelo = osde.cancelarReserva(reservaSeleccionada);
-			        if (seCancelo) {
-			            System.out.println("El turno ha sido cancelado exitosamente.");
-			        } else {
-			            System.out.println("No se pudo cancelar el turno.");
-			        }
-			    } else {
-			        System.out.println("No se encontró una reserva con ese ID para este paciente.");
-			    }
+				cancelarTurno(osde);
 				
 				break;
 			case SALIR:
@@ -160,6 +61,120 @@ public class GestionDeTurnosInterfaz {
 
 	}
 
+	// METODOS
+	// PRIMER METODO DEL SWITCH
+	private static void metodoAltaPaciente() {
+		teclado.nextLine(); // Para limpiar el buffer
+		String nombre = mensajeConTeclado("Ingrese su nombre");
+		String apellido = mensajeConTeclado("Ingrese su apellido");
+		Integer edad = mensajeConTecladoInt("Ingrese su edad");
+		Integer dni = mensajeConTecladoInt("Ingrese su numero de DNI");
+		mostrarElMenuDePlanes(opcionesPlan);
+		Integer seleccionPlan = mensajeConTecladoInt("Ingrese su cobertura");
+		Plan planSeleccionado = opcionesPlan[seleccionPlan - 1];
+
+		Paciente pacienteNuevo = new Paciente(nombre, apellido, edad, dni, planSeleccionado);
+		Boolean seAgrego = osde.agregarPacienteAlSistema(pacienteNuevo);
+
+		if (!seAgrego) {
+			System.out.println("El DNI: " + dni + " ya está registrado en nuestra Base de Datos");
+		} else {
+			System.out.println("El paciente " + nombre + ", dni: " + dni
+					+ " se ha registrado correctamente en el sistema.");
+		}
+	}
+
+	// SEGUNDO METODO DEL SWITCH
+	private static void reservarTurno(GestionDeTurnos osde,Especialidad[] opcionesEspecialidad) {
+		inicializacionDeMedicos();
+
+		Integer numeroDni = mensajeConTecladoInt("Ingrese su numero de DNI:");
+		Paciente pacienteAReservar = osde.buscarPacientePorDni(numeroDni);
+
+		if (pacienteAReservar == null) {
+			System.out
+					.println("El paciente con DNI:" + numeroDni + " no se encuentra registrado en el sistema.");
+			return;
+		}
+
+		mostrarElMenuDeEspecialidad(opcionesEspecialidad);
+		Integer opcionEspecialidad = mensajeConTecladoInt("Seleccione la especialidad:");
+		if (opcionEspecialidad < 1 || opcionEspecialidad > opcionesEspecialidad.length) {
+		    return;
+		}
+		Especialidad especialidadSeleccionada = opcionesEspecialidad[opcionEspecialidad - 1];
+
+		HashSet<Medico> medicosEncontrados = osde.buscarMedicosPorEspecialidad(especialidadSeleccionada);
+
+		System.out.println("Los medicos disponibles son :");
+		for (Medico medico : medicosEncontrados) {
+			System.out.println(medico);
+		}
+
+		Integer opcionMedico = mensajeConTecladoInt(
+				"Por favor, ingrese el codigo del medico que desea tomar turno:");
+		Medico medicoElegido = osde.buscarMedicoPorCodigo(opcionMedico);
+
+		LocalDateTime fechaYHoraTurno = mensajeParaFechaYHora();
+
+		Reserva nuevaReserva = new Reserva(pacienteAReservar, medicoElegido, fechaYHoraTurno,
+				pacienteAReservar.getPlan().getCopago());
+
+		Boolean seAgregoReserva = osde.reservarUnTurno(nuevaReserva);
+
+		// ACA VER SI LO DEJAMOS ASI, O VER EL PORQ NO SE RESERVO EL TURNO Y MANDAR MSJ
+		// X ESO.
+		// TIPO YA TIENE UN TURNO EN ESE HORARIO, O EL MEDICO NO PUEDE O ES FUERA DEL
+		// HORARIO PERMITIDO
+		if (!seAgregoReserva) {
+			System.out.println("No se pudo reservar el turno. Intenté en otro horario ");
+		} else {
+			System.out.println("Reserva realizada exitosamente");
+			System.out.println(pacienteAReservar.getNombre().toUpperCase() + " tiene un turno programado con "  + medicoElegido.getNombreCompleto()  + " el día " + fechaYHoraTurno.getDayOfMonth() + " del mes: " + fechaYHoraTurno.getMonthValue() + " a las " + fechaYHoraTurno.getHour() + ":" + fechaYHoraTurno.getMinute());
+		}
+	}
+	
+	
+	// TERCER METODO DEL SWITCH 
+	public static void cancelarTurno(GestionDeTurnos osde) {
+		Integer dniACancelar = mensajeConTecladoInt("Ingrese su número de DNI");
+	    Paciente pacienteACancelar = osde.buscarPacientePorDni(dniACancelar);
+
+	    if (pacienteACancelar == null) {
+	        System.out.println("El paciente con DNI: " + dniACancelar + " no se encuentra registrado.");
+	        return;
+	    }
+
+	    HashSet<Reserva> reservasDelPaciente = osde.buscarReservasPorPaciente(pacienteACancelar);
+
+	    if (reservasDelPaciente.isEmpty()) {
+	        System.out.println("No se encontraron reservas para el paciente.");
+	        return;
+	    }
+
+	    System.out.println("Turnos actuales del paciente:");
+	    for (Reserva reserva : reservasDelPaciente) {
+	        System.out.println("ID: " + reserva.getId() + " | Fecha: " + reserva.getFechaYHoraInicio() +
+	            " | Médico: " + reserva.getMedico().getNombreCompleto());
+	    }
+
+	    Integer idReserva = mensajeConTecladoInt("Ingrese el ID del turno que desea cancelar:");
+	    Reserva reservaSeleccionada = osde.buscarReservaPorId(idReserva);
+
+	    if (reservaSeleccionada != null && reservaSeleccionada.getPaciente().equals(pacienteACancelar)) {
+	        Boolean seCancelo = osde.cancelarReserva(reservaSeleccionada);
+	        if (seCancelo) {
+	            System.out.println("El turno ha sido cancelado exitosamente.");
+	        } else {
+	            System.out.println("No se pudo cancelar el turno.");
+	        }
+	    } else {
+	        System.out.println("No se encontró una reserva con ese ID para este paciente.");
+	    }
+		
+		
+	}
+	
 	// METODOS
 	public static void mensaje(String mensaje) {
 		System.out.println(mensaje);
