@@ -17,4 +17,7 @@ public class Paciente extends Persona {
 		this.plan = plan;
 	}
 
+	public Plan getPlan() {
+		return this.tipoPlan;
+	}
 }

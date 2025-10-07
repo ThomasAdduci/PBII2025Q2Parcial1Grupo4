@@ -7,8 +7,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Iterator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -405,3 +407,112 @@ public class TurnosMedicosTest {
 	}
 	
 }
+
+@Test
+public void DadoQueExisteUnClienteYMedicosEnElSistemaSeDeniegaAgregarTurnosDeDiasAnteriores() {
+	osde.agregarPacienteAlSistema(paciente1);
+	osde.agregarMedicoAlSistema(medico1);
+
+	LocalDateTime fechaHora2 = LocalDateTime.of(2025, 9, 10, 9, 00); // 10 de Septiembre 09:00 hs
+	Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2);
+	
+	assertTrue(osde.reservarUnTurno(reserva1)); // fecha 10 de Octubre
+	assertFalse(osde.reservarUnTurno2(reserva2));
+	
+	LocalDateTime fechaHora3 = LocalDateTime.of(2025, 10, 2, 8, 00); // 2 de Octubre 08:00 hs (dia de hoy a las 8 am)
+	Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3);
+	
+	assertTrue(osde.reservarUnTurno2(reserva3));
+	
+	LocalDateTime fechaHora4 = LocalDateTime.of(2025, 10, 2, 17, 00); // 2 de Octubre 08:00 hs (dia de hoy a las 17:00 pm)
+	Reserva reserva4 = new Reserva(paciente1, medico1, fechaHora4);
+	
+	assertTrue(osde.reservarUnTurno2(reserva4));
+	
+}
+@Test
+public void DadoQueExisteUnaReservaEnElSistemaBuscarUnaListaDeReservaDelMesDelCliente() {
+	osde.agregarPacienteAlSistema(paciente1);
+	osde.agregarMedicoAlSistema(medico1);
+
+	LocalDateTime fechaHora2 = LocalDateTime.of(2025, 10, 12, 9, 00); // 12 de Octubre 09:00 hs
+	Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2);
+	
+	LocalDateTime fechaHora3 = LocalDateTime.of(2025, 11, 15, 8, 00); // 15 de Noviembre 08:00 hs 
+	Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3);
+	
+	assertTrue(osde.reservarUnTurno(reserva1)); // fecha 10 de Octubre
+	assertTrue(osde.reservarUnTurno2(reserva2));
+	assertTrue(osde.reservarUnTurno2(reserva3));
+	
+	LocalDateTime fechaMes = LocalDateTime.of(2025, 10, 1, 9, 00); // 1 de Octubre 09:00 hs
+	
+	HashSet<Reserva>listaEsperada=new HashSet<Reserva>();
+	
+	listaEsperada.add(reserva1);
+	listaEsperada.add(reserva2);
+	
+	HashSet<Reserva>listaObtenida=osde.reservasDeUnClientePorMes(paciente1, fechaMes);
+	
+	assertEquals(listaObtenida,listaEsperada);
+}
+@Test
+public void DesdeUnaListaDeReservasSeEsperaUnMontoCalculadoDe0ParaCoberturaTotaly400ParaPlanEstandar() {
+	osde.agregarPacienteAlSistema(paciente1);
+	osde.agregarPacienteAlSistema(paciente2);
+	osde.agregarMedicoAlSistema(medico1);
+
+	LocalDateTime fechaHora2 = LocalDateTime.of(2025, 10, 12, 9, 00); // 12 de Octubre 09:00 hs
+	Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2);
+	
+	LocalDateTime fechaHora3 = LocalDateTime.of(2025, 10, 15, 8, 00); // 15 de Octubre 08:00 hs 
+	Reserva reserva3 = new Reserva(paciente2, medico1, fechaHora3);
+	
+	assertTrue(osde.reservarUnTurno(reserva1)); // fecha 10 de Octubre
+	assertTrue(osde.reservarUnTurno2(reserva2));
+	assertTrue(osde.reservarUnTurno2(reserva3));
+	
+	Double resultadoEsperadoCoberturaTotal=0.0;
+	Double resultadoObtenidoCoberturaTotal=osde.calcularImporteDelMesDado(fechaHora3, paciente2);
+	
+	Double resultadoEsperadoCoberturaEstandar=200.0;
+	Double resultadoObtenidoCoberturaEstandar=osde.calcularImporteDelMesDado(fechaHora3, paciente1);
+	
+	assertEquals(resultadoEsperadoCoberturaTotal,resultadoObtenidoCoberturaTotal);
+	assertEquals(resultadoEsperadoCoberturaEstandar,resultadoObtenidoCoberturaEstandar);
+}
+@Test
+public void ObtenerUnaListaDePacientesOrdenadosAlfabeticamentePorSuTipoDePlan() {
+	Paciente paciente3;
+	Paciente paciente4;
+	Paciente paciente5;
+	Paciente paciente6;
+	
+	paciente3 = new Paciente("Mica", "Sarmiento",85, 00001,Plan.JUVENTUD);
+	paciente4 = new Paciente("Mati", "Federal", 12, 024347,Plan.NO_POSEE);
+	paciente5 = new Paciente("Tomas", "Mazza", 67,6546546,Plan.ESTANDAR);
+	paciente6 = new Paciente("Ivan", "PalestinaFree", 120, 23523623,Plan.COBERTURA_TOTAL);
+	
+	osde.agregarPacienteAlSistema(paciente3);
+	osde.agregarPacienteAlSistema(paciente4);
+	osde.agregarPacienteAlSistema(paciente5);
+	osde.agregarPacienteAlSistema(paciente6);
+	
+	ArrayList<Paciente>ListaEsperada=new ArrayList<Paciente>();
+	
+	ListaEsperada.add(paciente6); //COBERTURA_TOTAL
+	ListaEsperada.add(paciente5); //ESTANDAR
+	ListaEsperada.add(paciente3); //JUVENTUD
+	ListaEsperada.add(paciente4); //NO_POSEE
+	
+	ArrayList<Paciente>ListaObtenida=new ArrayList<Paciente>();
+	ListaObtenida=osde.listaOrdenadaPacientesPorTipos();
+	
+	assertEquals(ListaEsperada,ListaObtenida);
+	
+}
+
+
+
+	
+
