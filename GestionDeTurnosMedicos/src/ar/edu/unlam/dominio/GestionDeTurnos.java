@@ -1,6 +1,10 @@
 package ar.edu.unlam.dominio;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 
 public class GestionDeTurnos {
@@ -78,7 +82,8 @@ public class GestionDeTurnos {
 
 	public Boolean reservarUnTurno(Reserva reservaNueva) {
 // LO POBRE EN EL TEST 7 
-		if (!buscarPacienteEnElSistema(reservaNueva.getPaciente()) || (!validarHoraDeLasReservas(reservaNueva))
+		if (	compararSiFechaEsAnteriorAHoy(reservaNueva.getFechaYHoraInicio())||
+				!buscarPacienteEnElSistema(reservaNueva.getPaciente()) || (!validarHoraDeLasReservas(reservaNueva))
 				|| (!validarQueElPacienteNoTengaOtraReservaEnElMismoHorarioYFecha(reservaNueva))
 				|| (!validarQueElMedicoNoTengaOtraReservaEnElMismoHorarioYFecha(reservaNueva))
 				|| (!validarHorarioDelturno(reservaNueva.getFechaYHoraInicio()))) {
@@ -212,18 +217,73 @@ public class GestionDeTurnos {
 
 		return reservasEncontradas;
 
+	}	
+	
+	public ArrayList<Paciente> listaOrdenadaPacientesPorTipos() {
+		ArrayList<Paciente> listaPacientes=new ArrayList<Paciente>(listadoDePacientes);
+		
+		listaPacientes.sort((p1, p2) -> p1.getPlan().name().compareTo(p2.getPlan().name()));
+		
+		return listaPacientes;
+	}
+	// Esta funcion devuelve un true si la fecha ingresada es anterior a el dia actual, 5 pm.
+	public Boolean compararSiFechaEsAnteriorAHoy(LocalDateTime fechaIngresada){
+		LocalDate fechaLimite=LocalDate.now();;
+		
+		if(fechaIngresada.toLocalDate().isBefore(fechaLimite)) {
+			return true;
+		}
+		
+		return false;
+	}
+	// En base a la fecha mandada,buscar los gastos acumulados del mes 
+	
+	public Double calcularImporteDelMesDado(LocalDateTime fecha,Paciente paciente) { 
+		
+		Double importeCalculado=0.0; 
+		
+		HashSet<Reserva> listaMes=reservasDeUnClientePorMes(paciente,fecha);
+		
+		for (Reserva reserva : listaMes) { 
+			importeCalculado+=reserva.calcularCostoFinal();
+		} 
+	return importeCalculado; 
+		
+	}
+	// Encontrar las reservas de un cliente del mes ingresado
+	
+	public HashSet<Reserva> reservasDeUnClientePorMes(Paciente paciente,LocalDateTime fecha){
+		HashSet<Reserva>listaReservasMes=new HashSet();
+		
+		for (Reserva reservas : listadoDeReservas) {
+			if(reservas.getPaciente().equals(paciente)&& reservas.getFechaYHoraInicio().getYear()==fecha.getYear()&&reservas.getFechaYHoraInicio().getMonth()==fecha.getMonth() ) {
+				listaReservasMes.add(reservas);
+			}
+	}
+		return listaReservasMes;
 	}
 
-	// BUSCAR PACIENTE POR RESERVA
-//	public Paciente buscarPacientePorReserva(Paciente paciente) {
-//		for (Reserva reservas : listadoDeReservas)
-//			if (reservas.getPaciente().equals(paciente)) {
-//				return reservas.getPaciente();
-//			}
-//
-//		return null;
-//	}
 
+	
+	public HashSet <Medico> buscarMedicosPorEspecialidad(Especialidad tipoEspecialidad){
+		HashSet <Medico> medicosEncontrados = new HashSet <>();
+		
+		for (Medico medico : listadoDeMedicos) {
+			if( medico.getTipoEspecialidad().equals(tipoEspecialidad)) {
+				medicosEncontrados.add(medico);
+			}
+			
+		}
+		return medicosEncontrados;
+	}
+	
+	public Medico buscarMedicoPorCodigo(Integer codigo) {
+		for (Medico medico : listadoDeMedicos) {
+			if(medico.getCodigoMedico().equals(codigo))
+				return medico;
+		}
+		return null;
+	}
 	// OBTENER FECHAYHORA ( No se si sirve este metodo)
 //	
 //	public LocalDateTime obtenerFechaYHoraDeReserva(LocalDateTime fechaYhora) {	

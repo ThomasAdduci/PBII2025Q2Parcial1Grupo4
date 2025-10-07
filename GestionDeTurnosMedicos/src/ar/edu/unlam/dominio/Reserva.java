@@ -50,6 +50,7 @@ public class Reserva {
 		return medico;
 	}
 
+	
 	public LocalDateTime getFechaYHoraInicio() {
 		return fechaYHoraInicio;
 	}
@@ -60,7 +61,9 @@ public class Reserva {
 	}
 	
 	public Integer calcularCostoFinal() {
-        int total = this.costoConsulta;
+        int total = 0;
+        total+=this.costoConsulta;
+        
         for (AccesorioClinico accesorio : accesoriosUsados) {
             total += accesorio.getCosto();
         }
