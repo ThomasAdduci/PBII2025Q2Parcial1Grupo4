@@ -113,6 +113,45 @@ public class GestionDeTurnosInterfaz {
 					System.out.println(pacienteAReservar.getNombre() + " tiene un turno programado con "  + medicoElegido.getNombreCompleto()  + " el día " + fechaYHoraTurno.getDayOfMonth() + " del mes: " + fechaYHoraTurno.getMonthValue() + " a las " + fechaYHoraTurno.getHour() + ":" + fechaYHoraTurno.getMinute());
 				}
 				break;
+				
+			case CANCELAR_TURNO:
+				
+				Integer dniACancelar = mensajeConTecladoInt("Ingrese su número de DNI");
+			    Paciente pacienteACancelar = osde.buscarPacientePorDni(dniACancelar);
+
+			    if (pacienteACancelar == null) {
+			        System.out.println("El paciente con DNI: " + dniACancelar + " no se encuentra registrado.");
+			        break;
+			    }
+
+			    HashSet<Reserva> reservasDelPaciente = osde.buscarReservasPorPaciente(pacienteACancelar);
+
+			    if (reservasDelPaciente.isEmpty()) {
+			        System.out.println("No se encontraron reservas para el paciente.");
+			        break;
+			    }
+
+			    System.out.println("Turnos actuales del paciente:");
+			    for (Reserva reserva : reservasDelPaciente) {
+			        System.out.println("ID: " + reserva.getId() + " | Fecha: " + reserva.getFechaYHoraInicio() +
+			            " | Médico: " + reserva.getMedico().getNombreCompleto());
+			    }
+
+			    Integer idReserva = mensajeConTecladoInt("Ingrese el ID del turno que desea cancelar:");
+			    Reserva reservaSeleccionada = osde.buscarReservaPorId(idReserva);
+
+			    if (reservaSeleccionada != null && reservaSeleccionada.getPaciente().equals(pacienteACancelar)) {
+			        Boolean seCancelo = osde.cancelarReserva(reservaSeleccionada);
+			        if (seCancelo) {
+			            System.out.println("El turno ha sido cancelado exitosamente.");
+			        } else {
+			            System.out.println("No se pudo cancelar el turno.");
+			        }
+			    } else {
+			        System.out.println("No se encontró una reserva con ese ID para este paciente.");
+			    }
+				
+				break;
 			case SALIR:
 				System.out.println("Gracias por elegirnos");
 
