@@ -204,37 +204,6 @@ public class TurnosMedicosTest {
 		
 		assertTrue(seAgrego);
 	}
-<<<<<<< HEAD
-	
-	@Test
-	public void dadoQueExisteUnPacienteConUnaReservaYOtroClienteQuiereSacarTurno10MinutosDespuesNoPuede() {
-		osde.agregarPacienteAlSistema(paciente1);
-		osde.agregarPacienteAlSistema(paciente2);
-		osde.reservarUnTurno(reserva1); // RESERVA 1 CON FECHA 08/10/2025 10.30 HS
-		
-		// RESERVA 1 8 de Octubre 10.30 hs
-		LocalDateTime fechaHora2 = LocalDateTime.of(2025, 10, 8, 10, 40); // 10 MINUTOS DESPUES
-		Reserva reserva2 = new Reserva(paciente2, medico1, fechaHora2, paciente2.getPlan().getCopago());
-		Boolean seAgrego = osde.reservarUnTurno(reserva2);
-		
-		assertFalse(seAgrego);
-	}
-	
-	@Test
-	public void dadoQueExisteUnPacienteConUnaReservaYOtroClienteQuiereSacarTurno15MinutosDespuesObtieneResultadoExitoso() {
-		osde.agregarPacienteAlSistema(paciente1);
-		osde.agregarPacienteAlSistema(paciente2);
-		osde.reservarUnTurno(reserva1); // RESERVA 1 CON FECHA 08/10/2025 10.30 HS
-		
-		// RESERVA 1 8 de Octubre 10.30 hs
-		LocalDateTime fechaHora2 = LocalDateTime.of(2025, 10, 8, 10, 45); // 10 MINUTOS DESPUES
-		Reserva reserva2 = new Reserva(paciente2, medico1, fechaHora2, paciente2.getPlan().getCopago());
-		Boolean seAgrego = osde.reservarUnTurno(reserva2);
-		
-		assertTrue(seAgrego);
-	}
-=======
->>>>>>> desarrollo
 	
 	@Test
 	public void dadoQueExisteUnClienteConUnTurnoSolicitadoYLoQuiereCancelarSeObtieneUnResultadoExitoso() {
@@ -381,8 +350,6 @@ public class TurnosMedicosTest {
 		//no tiene accesorios la consulta
 		Integer costoEsperado = 100;
 		assertEquals(costoEsperado, costoObtenido);
-		
-		
 	}
 	
 	@Test
