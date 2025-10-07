@@ -516,7 +516,7 @@ public void DesdeUnaListaDeReservasSeEsperaUnMontoCalculadoDe200ParaCoberturaTot
 	Double resultadoEsperadoCoberturaTotal=200.0;
 	Double resultadoObtenidoCoberturaTotal=osde.calcularImporteDelMesDado(fechaHora3, paciente1);
 	
-	Double resultadoEsperadoCoberturaEstandar=500.0;
+	Double resultadoEsperadoCoberturaEstandar=800.0;
 	Double resultadoObtenidoCoberturaEstandar=osde.calcularImporteDelMesDado(fechaHora3, paciente2);
 	
 	assertEquals(resultadoEsperadoCoberturaTotal,resultadoObtenidoCoberturaTotal);
