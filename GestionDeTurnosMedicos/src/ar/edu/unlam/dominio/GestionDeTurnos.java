@@ -82,7 +82,7 @@ public class GestionDeTurnos {
 
 	public Boolean reservarUnTurno(Reserva reservaNueva) {
 // LO POBRE EN EL TEST 7 
-		if (	compararSiFechaEsAnteriorAHoy(reservaNueva.getFechaYHora())||
+		if (	compararSiFechaEsAnteriorAHoy(reservaNueva.getFechaYHoraInicio())||
 				!buscarPacienteEnElSistema(reservaNueva.getPaciente()) || (!validarHoraDeLasReservas(reservaNueva))
 				|| (!validarQueElPacienteNoTengaOtraReservaEnElMismoHorarioYFecha(reservaNueva))
 				|| (!validarQueElMedicoNoTengaOtraReservaEnElMismoHorarioYFecha(reservaNueva))
@@ -245,7 +245,7 @@ public class GestionDeTurnos {
 		HashSet<Reserva> listaMes=reservasDeUnClientePorMes(paciente,fecha);
 		
 		for (Reserva reserva : listaMes) { 
-			importeCalculado+=reserva.getPaciente().getPlan().getValorCubiertoPorPlan();
+			importeCalculado+=reserva.calcularCostoFinal();
 		} 
 	return importeCalculado; 
 		
@@ -256,7 +256,7 @@ public class GestionDeTurnos {
 		HashSet<Reserva>listaReservasMes=new HashSet();
 		
 		for (Reserva reservas : listadoDeReservas) {
-			if(reservas.getPaciente().equals(paciente)&& reservas.getFechaYHora().getYear()==fecha.getYear()&&reservas.getFechaYHora().getMonth()==fecha.getMonth() ) {
+			if(reservas.getPaciente().equals(paciente)&& reservas.getFechaYHoraInicio().getYear()==fecha.getYear()&&reservas.getFechaYHoraInicio().getMonth()==fecha.getMonth() ) {
 				listaReservasMes.add(reservas);
 			}
 	}

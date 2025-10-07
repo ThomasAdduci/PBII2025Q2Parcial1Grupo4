@@ -168,13 +168,13 @@ public class TurnosMedicosTest {
 
 	@Test
 	public void dadoQueExisteUnClienteYQuiereReservarDosTurnosElMismoDiaYHoraYObtieneResultadoFalso() {
+		
 		osde.reservarUnTurno(reserva1); // reservamos la reserva1 que esta inicializada en el before
-
 		LocalDateTime fechaHoraDeReserva = LocalDateTime.of(2025, 10, 8, 10, 30); // misma fecha que reserva1
 		Reserva nuevaReserva = new Reserva(paciente1, medico1, fechaHoraDeReserva, paciente1.getPlan().getCopago());
-
 		Boolean reservaDuplicada = osde.reservarUnTurno(nuevaReserva);
 		assertFalse(reservaDuplicada);
+		
 	}
 	
 	@Test
@@ -285,10 +285,10 @@ public class TurnosMedicosTest {
 		osde.agregarPacienteAlSistema(paciente1);
 		osde.agregarMedicoAlSistema(medico1);
 
-		LocalDateTime fechaHora2 = LocalDateTime.of(2025, 9, 10, 9, 00); // 10 de Septiembre 09:00 hs
+		LocalDateTime fechaHora2 = LocalDateTime.of(2026, 9, 10, 9, 00); // 10 de Septiembre 09:00 hs
 		Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2, paciente1.getPlan().getCopago());
 
-		LocalDateTime fechaHora3 = LocalDateTime.of(2025, 8, 18, 15, 30); // 18 de Agosto 15:30 hs
+		LocalDateTime fechaHora3 = LocalDateTime.of(2026, 8, 18, 15, 30); // 18 de Agosto 15:30 hs
 		Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3, paciente1.getPlan().getCopago());
 
 		LocalDateTime fechaHora4 = LocalDateTime.of(2025, 11, 20, 13, 00); // 20 de Noviembre 13:00s
@@ -405,8 +405,6 @@ public class TurnosMedicosTest {
 	    // Devuelve un conjunto vacio
 	    assertTrue(medicosEncontrados.isEmpty());
 	}
-	
-}
 
 @Test
 public void DadoQueExisteUnClienteYMedicosEnElSistemaSeDeniegaAgregarTurnosDeDiasAnteriores() {
@@ -414,20 +412,20 @@ public void DadoQueExisteUnClienteYMedicosEnElSistemaSeDeniegaAgregarTurnosDeDia
 	osde.agregarMedicoAlSistema(medico1);
 
 	LocalDateTime fechaHora2 = LocalDateTime.of(2025, 9, 10, 9, 00); // 10 de Septiembre 09:00 hs
-	Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2);
+	Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2,paciente1.getPlan().getCopago());
 	
 	assertTrue(osde.reservarUnTurno(reserva1)); // fecha 10 de Octubre
-	assertFalse(osde.reservarUnTurno2(reserva2));
+	assertFalse(osde.reservarUnTurno(reserva2));
 	
-	LocalDateTime fechaHora3 = LocalDateTime.of(2025, 10, 2, 8, 00); // 2 de Octubre 08:00 hs (dia de hoy a las 8 am)
-	Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3);
+	LocalDateTime fechaHora3 = LocalDateTime.of(2025, 10, 22, 8, 00); // 22 de Octubre 08:00 hs (dia de hoy a las 8 am)
+	Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3,paciente1.getPlan().getCopago());
 	
-	assertTrue(osde.reservarUnTurno2(reserva3));
+	assertTrue(osde.reservarUnTurno(reserva3));
 	
 	LocalDateTime fechaHora4 = LocalDateTime.of(2025, 10, 2, 17, 00); // 2 de Octubre 08:00 hs (dia de hoy a las 17:00 pm)
-	Reserva reserva4 = new Reserva(paciente1, medico1, fechaHora4);
+	Reserva reserva4 = new Reserva(paciente1, medico1, fechaHora4,paciente1.getPlan().getCopago());
 	
-	assertTrue(osde.reservarUnTurno2(reserva4));
+	assertFalse(osde.reservarUnTurno(reserva4));
 	
 }
 @Test
@@ -436,14 +434,14 @@ public void DadoQueExisteUnaReservaEnElSistemaBuscarUnaListaDeReservaDelMesDelCl
 	osde.agregarMedicoAlSistema(medico1);
 
 	LocalDateTime fechaHora2 = LocalDateTime.of(2025, 10, 12, 9, 00); // 12 de Octubre 09:00 hs
-	Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2);
+	Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2,paciente1.getPlan().getCopago());
 	
 	LocalDateTime fechaHora3 = LocalDateTime.of(2025, 11, 15, 8, 00); // 15 de Noviembre 08:00 hs 
-	Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3);
+	Reserva reserva3 = new Reserva(paciente1, medico1, fechaHora3,paciente1.getPlan().getCopago());
 	
 	assertTrue(osde.reservarUnTurno(reserva1)); // fecha 10 de Octubre
-	assertTrue(osde.reservarUnTurno2(reserva2));
-	assertTrue(osde.reservarUnTurno2(reserva3));
+	assertTrue(osde.reservarUnTurno(reserva2));
+	assertTrue(osde.reservarUnTurno(reserva3));
 	
 	LocalDateTime fechaMes = LocalDateTime.of(2025, 10, 1, 9, 00); // 1 de Octubre 09:00 hs
 	
@@ -457,30 +455,74 @@ public void DadoQueExisteUnaReservaEnElSistemaBuscarUnaListaDeReservaDelMesDelCl
 	assertEquals(listaObtenida,listaEsperada);
 }
 @Test
-public void DesdeUnaListaDeReservasSeEsperaUnMontoCalculadoDe0ParaCoberturaTotaly400ParaPlanEstandar() {
+public void DesdeUnaListaDeReservasSeEsperaUnMontoCalculadoDe0ParaCoberturaTotaly200ParaPlanEstandar() {
 	osde.agregarPacienteAlSistema(paciente1);
 	osde.agregarPacienteAlSistema(paciente2);
 	osde.agregarMedicoAlSistema(medico1);
 
 	LocalDateTime fechaHora2 = LocalDateTime.of(2025, 10, 12, 9, 00); // 12 de Octubre 09:00 hs
-	Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2);
+	Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2,paciente1.getPlan().getCopago());
 	
 	LocalDateTime fechaHora3 = LocalDateTime.of(2025, 10, 15, 8, 00); // 15 de Octubre 08:00 hs 
-	Reserva reserva3 = new Reserva(paciente2, medico1, fechaHora3);
+	Reserva reserva3 = new Reserva(paciente2, medico1, fechaHora3,paciente2.getPlan().getCopago());
+	
+	LocalDateTime fechaHora4 = LocalDateTime.of(2025, 10, 18, 10, 00); // 17 de Octubre 10:00 hs 
+	Reserva reserva4 = new Reserva(paciente2, medico1, fechaHora4,paciente2.getPlan().getCopago());
 	
 	assertTrue(osde.reservarUnTurno(reserva1)); // fecha 10 de Octubre
-	assertTrue(osde.reservarUnTurno2(reserva2));
-	assertTrue(osde.reservarUnTurno2(reserva3));
+	assertTrue(osde.reservarUnTurno(reserva2));
+	assertTrue(osde.reservarUnTurno(reserva3));
+	assertTrue(osde.reservarUnTurno(reserva4));
+	
 	
 	Double resultadoEsperadoCoberturaTotal=0.0;
-	Double resultadoObtenidoCoberturaTotal=osde.calcularImporteDelMesDado(fechaHora3, paciente2);
+	Double resultadoObtenidoCoberturaTotal=osde.calcularImporteDelMesDado(fechaHora3, paciente1);
 	
 	Double resultadoEsperadoCoberturaEstandar=200.0;
-	Double resultadoObtenidoCoberturaEstandar=osde.calcularImporteDelMesDado(fechaHora3, paciente1);
+	Double resultadoObtenidoCoberturaEstandar=osde.calcularImporteDelMesDado(fechaHora3, paciente2);
 	
 	assertEquals(resultadoEsperadoCoberturaTotal,resultadoObtenidoCoberturaTotal);
 	assertEquals(resultadoEsperadoCoberturaEstandar,resultadoObtenidoCoberturaEstandar);
 }
+
+@Test
+public void DesdeUnaListaDeReservasSeEsperaUnMontoCalculadoDe200ParaCoberturaTotalConAnalisisDeSangrey800ParaPlanEstandarConAnalisisYRayos() {
+	osde.agregarPacienteAlSistema(paciente1);
+	osde.agregarPacienteAlSistema(paciente2);
+	osde.agregarMedicoAlSistema(medico1);
+	AnalisisSangre analisis=new AnalisisSangre();
+	RayosX rayos=new RayosX();
+	Set<AccesorioClinico> accesoriosRequeridos=new HashSet();
+	Set<AccesorioClinico> accesoriosRequeridos2=new HashSet();
+	accesoriosRequeridos.add(analisis);
+	accesoriosRequeridos2.add(analisis);
+	accesoriosRequeridos2.add(rayos);
+	
+	LocalDateTime fechaHora2 = LocalDateTime.of(2025, 10, 12, 9, 00); // 12 de Octubre 09:00 hs
+	Reserva reserva2 = new Reserva(paciente1, medico1, fechaHora2,accesoriosRequeridos,paciente1.getPlan().getCopago());
+	
+	LocalDateTime fechaHora3 = LocalDateTime.of(2025, 10, 15, 8, 00); // 15 de Octubre 08:00 hs 
+	Reserva reserva3 = new Reserva(paciente2, medico1, fechaHora3,accesoriosRequeridos2,paciente2.getPlan().getCopago());
+	
+	LocalDateTime fechaHora4 = LocalDateTime.of(2025, 10, 18, 10, 00); // 17 de Octubre 10:00 hs 
+	Reserva reserva4 = new Reserva(paciente2, medico1, fechaHora4,accesoriosRequeridos2,paciente2.getPlan().getCopago());
+	
+	assertTrue(osde.reservarUnTurno(reserva1)); // fecha 10 de Octubre
+	assertTrue(osde.reservarUnTurno(reserva2));
+	assertTrue(osde.reservarUnTurno(reserva3));
+	assertTrue(osde.reservarUnTurno(reserva4));
+	
+	
+	Double resultadoEsperadoCoberturaTotal=200.0;
+	Double resultadoObtenidoCoberturaTotal=osde.calcularImporteDelMesDado(fechaHora3, paciente1);
+	
+	Double resultadoEsperadoCoberturaEstandar=500.0;
+	Double resultadoObtenidoCoberturaEstandar=osde.calcularImporteDelMesDado(fechaHora3, paciente2);
+	
+	assertEquals(resultadoEsperadoCoberturaTotal,resultadoObtenidoCoberturaTotal);
+	assertEquals(resultadoEsperadoCoberturaEstandar,resultadoObtenidoCoberturaEstandar);
+}
+
 @Test
 public void ObtenerUnaListaDePacientesOrdenadosAlfabeticamentePorSuTipoDePlan() {
 	Paciente paciente3;
@@ -512,7 +554,7 @@ public void ObtenerUnaListaDePacientesOrdenadosAlfabeticamentePorSuTipoDePlan() 
 	
 }
 
-
+}
 
 	
 
