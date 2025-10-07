@@ -346,6 +346,8 @@ public class TurnosMedicosTest {
 		//no tiene accesorios la consulta
 		Integer costoEsperado = 100;
 		assertEquals(costoEsperado, costoObtenido);
+		
+		
 	}
 
 }
