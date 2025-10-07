@@ -2,6 +2,8 @@ package ar.edu.unlam.dominioTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
@@ -347,5 +349,59 @@ public class TurnosMedicosTest {
 		Integer costoEsperado = 100;
 		assertEquals(costoEsperado, costoObtenido);
 	}
-
+	
+	@Test
+	public void dadoQueExisteUnMedicoEnElSistemaCuandoSeBuscaPorCodigoSeObtieneElMedicoCorrecto() {
+		// Se agrega el medico al sistema
+		osde.agregarMedicoAlSistema(medico1);
+		// Se busca al medico agregado por su codigo
+		Medico medicoBuscado = osde.buscarMedicoPorCodigo(medico1.getCodigoMedico());
+		// El medico buscado tiene que ser el mismo que el medico agregado al sistema
+		assertEquals(medico1, medicoBuscado);
+	}
+	
+	@Test
+	public void dadoQueNoExisteUnMedicoConElCodigo777CuandoSeBuscaPorElCodigoDevuelveNull() {
+		// Busco un medico con un codigo que no existe
+		Medico medicoBuscado = osde.buscarMedicoPorCodigo(777);
+		// El medico buscado da null porque no existe uno con el codigo suministrado
+		assertNull(medicoBuscado);
+	
+	}
+	
+	@Test
+	public void dadoQueExistenMedicosEnElSistemaCuandoSeBuscanPorEspecialidadSeObtienenLosCorrectos() {
+		// Se inicializan dos nuevos medicos
+		Medico medico2 = new Medico("Maria", "Almaraz", 45, 12345678, Especialidad.CARDIOLOGIA);
+		Medico medico3 = new Medico("Jose", "Centurion", 45, 87654321, Especialidad.CLINICA);
+		// Se agregan medicos de distinta especialidad al sistema
+		// El medico1 tiene de especialidad clinica
+		osde.agregarMedicoAlSistema(medico1);
+		osde.agregarMedicoAlSistema(medico2);
+		osde.agregarMedicoAlSistema(medico3);
+		// Busco medicos con la especialidad clinica
+		HashSet<Medico> medicosEncontrados = osde.buscarMedicosPorEspecialidad(Especialidad.CLINICA);
+		// Verifico si los medicos fueron encontrados
+		assertTrue(medicosEncontrados.contains(medico1));
+		assertTrue(medicosEncontrados.contains(medico3));
+		// Devuelve la cantidad de demidos encontrados con especialidad clinica
+		assertEquals(2, medicosEncontrados.size());
+	}
+	
+	@Test
+	public void dadoQueNoExistenMedicosConEsaEspecialidadCuandoSeBuscanSeObtieneVacioPeroNoNull() {
+		// Se inicializan medicos
+	    Medico medico2 = new Medico("Maria", "Almaraz", 40, 12345678, Especialidad.CARDIOLOGIA);
+	    Medico medico3 = new Medico("Jose", "Centurion", 38, 87654321, Especialidad.DERMATOLOGIA);
+	 // Se agregan medicos de distinta especialidad al sistema
+	    osde.agregarMedicoAlSistema(medico2);
+	    osde.agregarMedicoAlSistema(medico3);
+	    // Busco medicos con la especialidad en la que no existen medicos
+	    HashSet<Medico> medicosEncontrados = osde.buscarMedicosPorEspecialidad(Especialidad.PEDIATRIA);
+	    // El resultado no es null
+	    assertNotNull(medicosEncontrados);
+	    // Devuelve un conjunto vacio
+	    assertTrue(medicosEncontrados.isEmpty());
+	}
+	
 }
